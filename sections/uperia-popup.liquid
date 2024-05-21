@@ -1,0 +1,356 @@
+{% liquid
+    assign chatid = section.settings.chatid
+    assign chat_repo = section.settings.chat_repo
+    assign background_color_from_light = section.settings.background_color_from_light
+    assign background_color_to_light = section.settings.background_color_to_light
+    assign background_color_from_dark = section.settings.background_color_from_dark
+    assign background_color_to_dark = section.settings.background_color_to_dark
+    assign header_background_color_light = section.settings.header_background_color_light
+    assign header_background_color_dark = section.settings.header_background_color_dark
+    assign header_text_color_light = section.settings.header_text_color_light
+    assign header_text_color_dark = section.settings.header_text_color_dark
+    assign header_circle_color_light = section.settings.header_circle_color_light
+    assign header_circle_color_dark = section.settings.header_circle_color_dark
+    assign header_logo_color_light = section.settings.header_logo_color_light
+    assign header_logo_color_dark = section.settings.header_logo_color_dark
+    assign card_background_color_light = section.settings.card_background_color_light
+    assign card_background_color_dark = section.settings.card_background_color_dark
+    assign card_text_color_light = section.settings.card_text_color_light
+    assign card_text_color_dark = section.settings.card_text_color_dark
+    assign card_border_color_light = section.settings.card_border_color_light
+    assign card_border_color_dark = section.settings.card_border_color_dark
+    assign button_background_color_light = section.settings.button_background_color_light
+    assign button_background_color_dark = section.settings.button_background_color_dark
+    assign button_text_color_light = section.settings.button_text_color_light
+    assign button_text_color_dark = section.settings.button_text_color_dark
+    assign button_border_color_light = section.settings.button_border_color_light
+    assign button_border_color_dark = section.settings.button_border_color_dark
+%}
+
+{% capture variables %}
+{% if background_color_from_light != blank %}
+background_color_from_light={{background_color_from_light}}&
+{% endif %}
+{% if background_color_to_light != blank %}
+background_color_to_light={{background_color_to_light}}&
+{% endif %}
+{% if background_color_from_dark != blank %}
+background_color_from_dark={{background_color_from_dark}}&
+{% endif %}
+{% if background_color_to_dark != blank %}
+background_color_to_dark={{background_color_to_dark}}&
+{% endif %}
+{% if header_background_color_light != blank %}
+header_background_color_light={{header_background_color_light}}&
+{% endif %}
+{% if header_background_color_dark != blank %}
+header_background_color_dark={{header_background_color_dark}}&
+{% endif %}
+{% if header_text_color_light != blank %}
+header_text_color_light={{header_text_color_light}}&
+{% endif %}
+{% if header_text_color_dark != blank %}
+header_text_color_dark={{header_text_color_dark}}&
+{% endif %}
+{% if header_circle_color_light != blank %}
+header_circle_color_light={{header_circle_color_light}}&
+{% endif %}
+{% if header_circle_color_dark != blank %}
+header_circle_color_dark={{header_circle_color_dark}}&
+{% endif %}
+{% if header_logo_color_light != blank %}
+header_logo_color_light={{header_logo_color_light}}&
+{% endif %}
+{% if header_logo_color_dark != blank %}
+header_logo_color_dark={{header_logo_color_dark}}&
+{% endif %}
+{% if card_background_color_light != blank %}
+card_background_color_light={{card_background_color_light}}&
+{% endif %}
+{% if card_background_color_dark != blank %}
+card_background_color_dark={{card_background_color_dark}}&
+{% endif %}
+{% if card_text_color_light != blank %}
+card_text_color_light={{card_text_color_light}}&
+{% endif %}
+{% if card_text_color_dark != blank %}
+card_text_color_dark={{card_text_color_dark}}&
+{% endif %}
+{% if card_border_color_light != blank %}
+card_border_color_light={{card_border_color_light}}&
+{% endif %}
+{% if card_border_color_dark != blank %}
+card_border_color_dark={{card_border_color_dark}}&
+{% endif %}
+{% if button_background_color_light != blank %}
+button_background_color_light={{button_background_color_light}}&
+{% endif %}
+{% if button_background_color_dark != blank %}
+button_background_color_dark={{button_background_color_dark}}&
+{% endif %}
+{% if button_text_color_light != blank %}
+button_text_color_light={{button_text_color_light}}&
+{% endif %}
+{% if button_text_color_dark != blank %}
+button_text_color_dark={{button_text_color_dark}}&
+{% endif %}
+{% if button_border_color_light != blank %}
+button_border_color_light={{button_border_color_light}}&
+{% endif %}
+{% if button_border_color_dark != blank %}
+button_border_color_dark={{button_border_color_dark}}&
+{% endif %}
+{% endcapture %}
+{% assign variables = variables | strip | strip_newlines | remove_last: '&' |  prepend: '?' | replace:"#","%23"  %}
+
+{% capture app_url %}
+    https://{{chat_repo}}.uperia.app
+{% endcapture %}
+{% assign app_url = app_url | strip %}
+<script>
+    getHeight = async (iframe) => {
+        window.onmessage = function(e) {
+            console.log(`Got message from ${e.origin}`)
+			if (e.origin !== '{{app_url}}') return;
+            console.log(e.data);
+            iframe.style.height = JSON.parse(e.data).height + 'px';
+            const iframe_container = iframe.closest('.chat-popup');
+            iframe_container.scrollTo({ left: 0, top: iframe_container.scrollHeight, behavior: "smooth" });
+		};
+        iframe.contentWindow.postMessage('getHeight', '{{app_url}}');
+    }
+</script>
+
+<div class="chat-popup-container">
+    <div class="chat-popup">
+        <iframe src="" data-src="{{app_url}}/{{chatid}}{{variables | strip}}" frameborder="0" onload="getHeight(this)"></iframe>
+    </div>
+</div>
+
+{% comment %}
+    https://{{chat_repo}}.uperia.app/{{chatid}}{{variables | strip}}
+{% endcomment %}
+
+<script>
+    function loadIframe(iframe) {
+        if (iframe.getAttribute('data-src')) {
+            iframe.src = iframe.getAttribute('data-src');
+            iframe.removeAttribute('data-src');
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('#uperia_chat').addEventListener('click', function() {
+        document.querySelector('.chat-popup-container').classList.add('show');
+        loadIframe(document.querySelector('.chat-popup iframe'))
+    });
+    });
+
+</script>
+
+<style>
+    .chat-popup-container {
+        display: none;
+    }
+
+    .chat-popup-container.show {
+        display: flex;
+    }
+
+    .chat-popup {
+        position: relative;
+        background: #fff;
+        width: 100%;
+        max-height: calc(100vh - 135px);
+        overflow: auto;
+    }
+
+    .chat-popup iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        box-shadow: none;
+        outline: none;
+    }
+</style>
+
+{% schema %}
+{
+    "name": "Uperia Chat Popup",
+    "settings": [
+        {
+            "type": "text",
+            "id": "chatid",
+            "label": "Chat ID",
+            "default": "66068b8f5330f1ea35ed4b71"
+        },
+        {
+            "type": "select",
+            "id": "chat_repo",
+            "label": "Chat (for testing) ",
+            "default": "chat",
+            "info": "This is just for testing, it will be removed later on",
+            "options": [
+                {
+                    "value": "chat",
+                    "label": "chat"
+                },
+                {
+                    "value": "expertify",
+                    "label": "expertify"
+                }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Background colors"
+        },
+        {
+            "type": "color",
+            "id": "background_color_from_light",
+            "label": "Background Color Gradient Start (Light)",
+            "info": "Gradient start color for light version",
+            "default": "#dddddd"
+        },
+        {
+            "type": "color",
+            "id": "background_color_to_light",
+            "label": "Background Color Gradient End (Light)",
+            "info": "Gradient end color for light version",
+            "default": "#efefef"
+        },
+        {
+            "type": "color",
+            "id": "background_color_from_dark",
+            "label": "Background Color Gradient Start (Dark)",
+            "info": "Gradient start color for dark version",
+            "default": "#000000"
+        },
+        {
+            "type": "color",
+            "id": "background_color_to_dark",
+            "label": "Background Color Gradient End (Dark)",
+            "info": "Gradient end color for dark version",
+            "default": "#000000"
+        },
+        {
+            "type": "header",
+            "content": "Header settings"
+        },
+        {
+            "type": "color",
+            "id": "header_background_color_light",
+            "label": "Header Background Color (Light)"
+        },
+        {
+            "type": "color",
+            "id": "header_background_color_dark",
+            "label": "Header Background Color (Dark)"
+        },
+        {
+            "type": "color",
+            "id": "header_text_color_light",
+            "label": "Header Text Color (Light)"
+        },
+        {
+            "type": "color",
+            "id": "header_text_color_dark",
+            "label": "Header Text Color (Dark)"
+        },
+        {
+            "type": "color",
+            "id": "header_circle_color_light",
+            "label": "Header Circle Color (Light)"
+        },
+        {
+            "type": "color",
+            "id": "header_circle_color_dark",
+            "label": "Header Circle Color (Dark)"
+        },
+        {
+            "type": "color",
+            "id": "header_logo_color_light",
+            "label": "Header Logo Color (Light)"
+        },
+        {
+            "type": "color",
+            "id": "header_logo_color_dark",
+            "label": "Header Logo Color (Dark)"
+        },
+        {
+            "type": "header",
+            "content": "Card settings"
+        },
+        {
+            "type": "color",
+            "id": "card_background_color_light",
+            "label": "Card Background Color (Light)"
+        },
+        {
+            "type": "color",
+            "id": "card_background_color_dark",
+            "label": "Card Background Color (Dark)"
+        },
+        {
+            "type": "color",
+            "id": "card_text_color_light",
+            "label": "Card Text Color (Light)"
+        },
+        {
+            "type": "color",
+            "id": "card_text_color_dark",
+            "label": "Card Text Color (Dark)"
+        },
+        {
+            "type": "color",
+            "id": "card_border_color_light",
+            "label": "Card Border Color (Light)"
+        },
+        {
+            "type": "color",
+            "id": "card_border_color_dark",
+            "label": "Card Border Color (Dark)"
+        },
+        {
+            "type": "header",
+            "content": "Button settings"
+        },
+        {
+            "type": "color",
+            "id": "button_background_color_light",
+            "label": "Button Background Color (Light)"
+        },
+        {
+            "type": "color",
+            "id": "button_background_color_dark",
+            "label": "Button Background Color (Dark)"
+        },
+        {
+            "type": "color",
+            "id": "button_text_color_light",
+            "label": "Button Text Color (Light)"
+        },
+        {
+            "type": "color",
+            "id": "button_text_color_dark",
+            "label": "Button Text Color (Dark)"
+        },
+        {
+            "type": "color",
+            "id": "button_border_color_light",
+            "label": "Button Border Color (Light)"
+        },
+        {
+            "type": "color",
+            "id": "button_border_color_dark",
+            "label": "Button Border Color (Dark)"
+        }
+
+    ],
+    "presets": [
+        {
+            "name": "Uperia Chat Popup",
+            "category": "header"
+        }
+    ]
+}
+{% endschema %}
