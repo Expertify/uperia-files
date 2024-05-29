@@ -140,7 +140,7 @@ button_border_color_dark={{button_border_color_dark}}&
     }
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('#uperia_chat').addEventListener('click', function() {
-        document.querySelector('.chat-popup-container').classList.add('show');
+        document.querySelector('.chat-popup-container').classList.toggle('show');
         loadIframe(document.querySelector('.chat-popup iframe'))
     });
     });
